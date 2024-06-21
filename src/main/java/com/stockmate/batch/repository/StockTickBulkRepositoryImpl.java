@@ -33,7 +33,6 @@ public class StockTickBulkRepositoryImpl implements StockTickBulkRepository {
         }
         String query = sql.substring(0, sql.length() - 2);
         query += " ON DUPLICATE KEY UPDATE volume = volume + VALUES(volume)";
-        log.info(query);
         em.createNativeQuery(query).executeUpdate();
     }
 }

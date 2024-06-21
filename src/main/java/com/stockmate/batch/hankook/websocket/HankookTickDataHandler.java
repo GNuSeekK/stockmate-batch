@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
@@ -17,7 +16,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @Component
-@Slf4j
 public class HankookTickDataHandler extends TextWebSocketHandler {
 
     private final StockTickService stockTickService;
@@ -64,7 +62,6 @@ public class HankookTickDataHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
         LocalDateTime receiveTime = LocalDateTime.now();
-        log.info("receiveTime: {}", receiveTime);
         List<StockTick> stockDataList = parseMessage(message.getPayload(), receiveTime);
         stockDataList.forEach(this::addStockData);
     }
@@ -94,9 +91,6 @@ public class HankookTickDataHandler extends TextWebSocketHandler {
                     .volume(Integer.parseInt(stockData[12 + i * DATA_NUM]))
                     .build();
                 stockDataList.add(stockTick);
-                // code, date, price, volume logging
-                log.info("code: {}, date: {}, price: {}, volume: {}", stockTick.getId().getCode(),
-                    stockTick.getId().getDate(), stockTick.getId().getPrice(), stockTick.getVolume());
             }
         }
         return stockDataList;
