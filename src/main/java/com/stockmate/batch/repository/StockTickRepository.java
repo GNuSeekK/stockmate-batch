@@ -5,6 +5,6 @@ import com.stockmate.batch.entity.StockTick;
 import com.stockmate.batch.entity.StockTickId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StockTickRepository extends JpaRepository<StockTick, StockTickId> {
+public interface StockTickRepository extends JpaRepository<StockTick, StockTickId>, StockTickBulkRepository {
 
 }

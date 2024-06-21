@@ -16,7 +16,7 @@ public class StockTickService {
 
     @Transactional
     public void bulkSaveAllTick(List<StockTick> stockTicks) {
-        stockTickRepository.saveAll(stockTicks);
+        stockTickRepository.bulkSaveAllTick(stockTicks);
     }
 
 }

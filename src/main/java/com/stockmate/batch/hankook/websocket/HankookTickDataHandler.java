@@ -64,6 +64,7 @@ public class HankookTickDataHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
         LocalDateTime receiveTime = LocalDateTime.now();
+        log.info("receiveTime: {}", receiveTime);
         List<StockTick> stockDataList = parseMessage(message.getPayload(), receiveTime);
         stockDataList.forEach(this::addStockData);
     }

@@ -21,7 +21,6 @@ public class StockTickId implements Serializable {
     @Column(name = "stock_code")
     private String code;
 
-    // date 형식 : 2024년 12월 31일 13시 59분 59초 => 20241231135959
     @Column(name = "original_date")
     private LocalDateTime date;
 
