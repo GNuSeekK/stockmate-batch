@@ -5,11 +5,9 @@ import jakarta.persistence.EntityManager;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
-@Slf4j
 public class StockTickBulkRepositoryImpl implements StockTickBulkRepository {
 
     private final EntityManager em;

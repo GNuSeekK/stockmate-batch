@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stockmate.batch.entity.Stock;
 import com.stockmate.batch.hankook.feign.HankookClientConfig;
 import com.stockmate.batch.repository.StockRepository;
-import jakarta.annotation.PostConstruct;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,9 +38,9 @@ public class HankookTickDataManager {
         this.approvalKey = hankookClientConfig.getApprovalToken();
     }
 
-    @PostConstruct
     public void connect() {
-        List<Stock> stocks = stockRepository.findAll();
+//        List<Stock> stocks = stockRepository.findAll();
+        List<Stock> stocks = getDummyStocks();
         try {
             StandardWebSocketClient client = new StandardWebSocketClient();
             this.session = client.doHandshake(hankookTickDataHandler, url).get();
@@ -52,6 +51,16 @@ public class HankookTickDataManager {
             e.printStackTrace();
             // 재연결 로직 추가 필요
         }
+    }
+
+    private List<Stock> getDummyStocks() {
+        return List.of(
+            Stock.builder().code("005930").build(),
+            Stock.builder().code("000660").build(),
+            Stock.builder().code("035420").build(),
+            Stock.builder().code("051910").build(),
+            Stock.builder().code("207940").build()
+        );
     }
 
     private void subscribe(String stockCode) {

@@ -254,3 +254,6 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+
+### quant 쪽은 생략
+/src/main/java/com/stockmate/batch/quant

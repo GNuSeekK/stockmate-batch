@@ -34,12 +34,6 @@ public class Stock extends BaseTimeEntity implements Persistable<String> {
     @Column(name = "exchange")
     private String exchange;
 
-    public Stock(String code, String name) {
-        this.code = code;
-        this.name = name;
-    }
-
-
     @Override
     public String getId() {
         return this.getCode();

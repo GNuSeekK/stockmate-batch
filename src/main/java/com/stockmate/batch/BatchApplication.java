@@ -12,7 +12,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @AutoConfiguration
 @EnableJpaRepositories
 @EnableJpaAuditing
-
 public class BatchApplication {
 
     public static void main(String[] args) {
