@@ -1,6 +1,5 @@
 package com.stockmate.batch.entity;
 
-
 import com.stockmate.batch.entity.base.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,13 +18,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Persistable;
 
 @Entity
-@Table(name = "coin_price")
+@Table(name = "coin_price_second")
 @IdClass(CoinPriceId.class)
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CoinPrice extends BaseTimeEntity implements Persistable<CoinPriceId> {
+public class CoinPriceSecond extends BaseTimeEntity implements Persistable<CoinPriceId> {
 
     @Id
     @Column(name = "coin_id")
@@ -60,17 +60,27 @@ public class CoinPrice extends BaseTimeEntity implements Persistable<CoinPriceId
         return getCreatedDate() == null;
     }
 
-    public static CoinPriceSecond toSecond(CoinPrice coinPrice) {
-        return CoinPriceSecond.builder()
-            .id(coinPrice.getId().getId())
-            .openTime(coinPrice.getOpenTime())
-            .openPrice(coinPrice.getOpenPrice())
-            .highPrice(coinPrice.getHighPrice())
-            .lowPrice(coinPrice.getLowPrice())
-            .closePrice(coinPrice.getClosePrice())
-            .volume(coinPrice.getVolume())
-            .quoteAssetVolume(coinPrice.getQuoteAssetVolume())
-            .numberOfTrades(coinPrice.getNumberOfTrades())
-            .build();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof CoinPriceSecond that)) {
+            return false;
+        }
+        return getId() == that.getId() && getOpenTime() == that.getOpenTime()
+            && Double.compare(getOpenPrice(), that.getOpenPrice()) == 0
+            && Double.compare(getHighPrice(), that.getHighPrice()) == 0
+            && Double.compare(getLowPrice(), that.getLowPrice()) == 0
+            && Double.compare(getClosePrice(), that.getClosePrice()) == 0
+            && Double.compare(getVolume(), that.getVolume()) == 0
+            && Double.compare(getQuoteAssetVolume(), that.getQuoteAssetVolume()) == 0
+            && getNumberOfTrades() == that.getNumberOfTrades();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getOpenTime(), getOpenPrice(), getHighPrice(), getLowPrice(), getClosePrice(),
+            getVolume(), getQuoteAssetVolume(), getNumberOfTrades());
     }
 }

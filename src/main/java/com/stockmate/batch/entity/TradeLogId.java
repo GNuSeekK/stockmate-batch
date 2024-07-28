@@ -3,30 +3,29 @@ package com.stockmate.batch.entity;
 import java.io.Serializable;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-public class CoinPriceId implements Serializable {
+public class TradeLogId implements Serializable {
 
     private long id;
-    private long openTime;
+    private String symbol;
+    private long buyTime;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof CoinPriceId that)) {
+        if (!(o instanceof TradeLogId that)) {
             return false;
         }
-        return id == that.id && openTime == that.openTime;
+        return id == that.id && buyTime == that.buyTime && Objects.equals(symbol, that.symbol);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, openTime);
+        return Objects.hash(id, symbol, buyTime);
     }
 }

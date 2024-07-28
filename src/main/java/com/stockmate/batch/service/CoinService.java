@@ -15,10 +15,11 @@ public class CoinService {
 
     private final CoinRepository coinRepository;
 
-    public List<String> getCoinSymbols() {
-        return coinRepository.findAll()
-            .stream()
-            .map(Coin::getSymbol)
-            .toList();
+    public List<Coin> getCoinSymbols() {
+        return coinRepository.findAll();
+    }
+
+    public Coin getCoinBySymbol(String symbol) {
+        return coinRepository.findBySymbol(symbol).orElseThrow(() -> new IllegalArgumentException("해당 코인이 존재하지 않습니다."));
     }
 }

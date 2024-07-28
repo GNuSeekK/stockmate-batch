@@ -1,24 +1,25 @@
 package com.stockmate.batch.repository;
 
-import com.stockmate.batch.entity.CoinPrice;
+import com.stockmate.batch.entity.CoinPriceSecond;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
-public class CoinPriceBulkRepositoryImpl implements CoinPriceBulkRepository {
+public class CoinPriceSecondBulkRepositoryImpl implements
+    CoinPriceSecondBulkRepository {
 
     private final EntityManager em;
 
     @Override
     @Transactional
-    public void bulkSaveAllCoinPrice(List<CoinPrice> coinPrices) {
+    public void bulkSaveAllCoinPrice(List<CoinPriceSecond> coinPrices) {
         if (coinPrices.isEmpty()) {
             return;
         }
         StringBuilder sql = new StringBuilder(
-            "INSERT IGNORE INTO coin_price (coin_id, open_time, open_price, high_price, low_price, close_price, volume, quote_asset_volume, number_of_trades, created_date, last_modified_date) VALUES ");
+            "INSERT IGNORE INTO coin_price_second (coin_id, open_time, open_price, high_price, low_price, close_price, volume, quote_asset_volume, number_of_trades, created_date, last_modified_date) VALUES ");
 
         coinPrices.forEach(coinPrice -> inputToSql(coinPrice, sql));
         String query = eraseLastTwo(sql) + " ON DUPLICATE KEY UPDATE "
@@ -38,7 +39,7 @@ public class CoinPriceBulkRepositoryImpl implements CoinPriceBulkRepository {
         return sql.substring(0, sql.length() - 2);
     }
 
-    private static void inputToSql(CoinPrice coinPrice, StringBuilder sql) {
+    private static void inputToSql(CoinPriceSecond coinPrice, StringBuilder sql) {
         sql.append("(")
             .append(coinPrice.getRealId()).append(", ")
             .append(coinPrice.getOpenTime()).append(", ")

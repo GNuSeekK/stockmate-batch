@@ -9,14 +9,12 @@ import com.stockmate.batch.repository.StockRepository;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
-@Component
+//@Component
 public class HankookTickDataManager {
 
     private final StockRepository stockRepository;
@@ -27,7 +25,7 @@ public class HankookTickDataManager {
     private String approvalKey;
 
 
-    @Autowired
+    //    @Autowired
     public HankookTickDataManager(
         HankookTickDataHandler hankookTickDataHandler,
         StockRepository stockRepository,

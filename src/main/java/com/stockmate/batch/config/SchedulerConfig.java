@@ -6,12 +6,14 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 @Configuration
 @EnableScheduling
 @RequiredArgsConstructor
+@Profile("real")
 public class SchedulerConfig {
 
     private final JobLauncher jobLauncher;
@@ -25,7 +27,7 @@ public class SchedulerConfig {
 
     private final JobExplorer jobExplorer;
 
-    @Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "*/1 * * * * *")
     public synchronized void saveCoinPriceData() throws Exception {
         jobLauncher.run(importCoinPriceJob, new JobParametersBuilder()
             .addLong("timestamp", System.currentTimeMillis())

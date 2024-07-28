@@ -1,12 +1,10 @@
 package com.stockmate.batch.entity;
 
-import jakarta.persistence.Column;
+import com.stockmate.batch.entity.base.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,22 +15,25 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Builder
-@Table(name = "coin", indexes = {
-    @Index(name = "coin_symbol_kind", columnList = "symbol, kind", unique = true)
-})
-public class Coin {
+public class LogString extends BaseTimeEntity {
 
     @Id
-    @Column(name = "coin_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
-    @Column(name = "symbol")
-    private String symbol;
+    private String log;
 
-    @Column(name = "name")
-    private String name;
+    public LogString(String log) {
+        this.log = log;
+    }
 
-    private String kind;
+    public void addLog(String text) {
+        if (log == null) {
+            log = text;
+        } else {
+            log += text;
+        }
+    }
+
 
 }

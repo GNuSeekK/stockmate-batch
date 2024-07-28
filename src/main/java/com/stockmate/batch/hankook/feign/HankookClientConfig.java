@@ -9,10 +9,9 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
-@Configuration
+//@Configuration
 public class HankookClientConfig {
 
     @Value("${hankook.appKey}")
@@ -25,8 +24,8 @@ public class HankookClientConfig {
     @Value("${hankook.url}")
     private String url;
 
-    @Bean("hankookRequestInterceptor")
-    public RequestInterceptor requestInterceptor() {
+    @Bean
+    public RequestInterceptor hankookRequestInterceptor() {
         return template -> {
             template.header("appkey", appKey);
             template.header("appsecret", secretKey);

@@ -2,7 +2,7 @@ package com.stockmate.batch.hankook.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
-@FeignClient(name = "hankook", url = "${hankook.url}", configuration = HankookClientConfig.class)
+@FeignClient(name = "hankook", url = "${hankook.url}")
 public interface HankookClient {
 
 }

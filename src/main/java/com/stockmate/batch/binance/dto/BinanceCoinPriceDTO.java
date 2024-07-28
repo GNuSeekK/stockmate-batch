@@ -43,9 +43,9 @@ public class BinanceCoinPriceDTO {
     @JsonProperty("8")
     private int numberOfTrades;
 
-    public CoinPrice toEntity(String symbol) {
+    public CoinPrice toEntity(BinanceCoinPriceRequestDto requestDto) {
         return CoinPrice.builder()
-            .symbol(symbol)
+            .id(requestDto.getCoin().getId())
             .openTime(this.openTime)
             .openPrice(this.openPrice)
             .highPrice(this.highPrice)

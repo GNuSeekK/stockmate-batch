@@ -1,8 +1,12 @@
 package com.stockmate.batch.config;
 
 import com.stockmate.batch.binance.dto.BinanceCoinPriceRequestDto;
+import com.stockmate.batch.binance.service.BinanceFutureService;
 import com.stockmate.batch.binance.service.BinanceService;
+import com.stockmate.batch.entity.Coin;
 import com.stockmate.batch.entity.CoinPrice;
+import com.stockmate.batch.quant.TradingExecutor;
+import com.stockmate.batch.repository.AccountRepository;
 import com.stockmate.batch.service.CoinPriceService;
 import com.stockmate.batch.service.CoinService;
 import java.util.List;
@@ -28,7 +32,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @EnableBatchProcessing
 @RequiredArgsConstructor
 @Slf4j
-public class CoinBatchConfig {
+public class CoinPriceBatchConfig {
 
     private final JobRepository jobRepository;
     private final CoinPriceService coinPriceService;
@@ -36,23 +40,20 @@ public class CoinBatchConfig {
     private final PlatformTransactionManager transactionManager;
     private final CoinService coinService;
     private final JobExecutionListener listener;
+    private final TradingExecutor tradingExecutor;
+    private final AccountRepository accountRepository;
+    private final BinanceFutureService binanceFutureService;
 
     @Bean
     public Job importCoinPriceJob(JobExecutionListener listener) {
-        return new JobBuilder("importCoinPriceJob", jobRepository)
-            .incrementer(new RunIdIncrementer())
-            .start(coinPriceStep())
-            .listener(listener)
-            .build();
+        return new JobBuilder("importCoinPriceJob", jobRepository).incrementer(new RunIdIncrementer())
+            .start(coinPriceStep()).listener(listener).build();
     }
 
     @Bean
     public Step coinPriceStep() {
-        return new StepBuilder("coinPriceStep", jobRepository)
-            .<BinanceCoinPriceRequestDto, List<CoinPrice>>chunk(1, transactionManager)
-            .reader(coinSymbolReader())
-            .processor(coinPriceProcessor())
-            .writer(coinPriceWriter())
+        return new StepBuilder("coinPriceStep", jobRepository).<BinanceCoinPriceRequestDto, List<CoinPrice>>chunk(1,
+                transactionManager).reader(coinSymbolReader()).processor(coinPriceProcessor()).writer(coinPriceWriter())
             .build();
     }
 
@@ -67,8 +68,8 @@ public class CoinBatchConfig {
             @Override
             public BinanceCoinPriceRequestDto read() {
                 if (requests == null) {
-                    List<String> symbols = coinService.getCoinSymbols();
-                    this.requests = binanceService.createCoinPriceRequestDtos(symbols);
+                    List<Coin> symbols = coinService.getCoinSymbols();
+                    this.requests = binanceService.createCoinPriceRequestDtos(symbols, "1m");
                 }
                 if (index < requests.size()) {
                     return requests.get(index++);
@@ -87,9 +88,17 @@ public class CoinBatchConfig {
     @Bean
     public ItemWriter<List<CoinPrice>> coinPriceWriter() {
         return items -> {
+//            Account account = accountRepository.findLastestAccount();
             for (List<CoinPrice> item : items) {
                 coinPriceService.saveAllWithBulk(item);
+//                for (int i = 0; i < item.size(); i++) {
+//                    CoinPrice coinPrice = item.get(i);
+//                    synchronized (tradingExecutor) {
+//                        tradingExecutor.trade(account, CoinPriceDTO.of(coinPrice), i == item.size() - 1);
+//                    }
+//                }
             }
+//            accountRepository.save(account);
         };
     }
 
