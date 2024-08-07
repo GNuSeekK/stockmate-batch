@@ -14,22 +14,23 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-@Profile("test")
-public class ApplicationTestStartupRunner {
+@Profile("crawling")
+public class ApplicationCrawlingStartupRunner {
 
     private final SlackService slackService;
-    private final Job importCoinPriceRealJob;
+    private final Job importCoinPriceSecondJob;
+    private final Job importCoinPriceJob;
     private final JobLauncher jobLauncher;
 
     @Bean
     public ApplicationRunner run() {
         return args -> {
-            jobLauncher.run(importCoinPriceRealJob,
+            jobLauncher.run(importCoinPriceJob,
                 new JobParametersBuilder().addLong("timestamp", System.currentTimeMillis()).toJobParameters());
-            slackService.sendMessage("가격 데이터 수집이 완료되었습니다.");
-//            for (int i = 0; i < 5; i++) {
-//                slackService.sendMessage("test" + i);
-//            }
+            slackService.sendMessage("백테스트용 분 데이터 수집이 완료되었습니다.");
+            jobLauncher.run(importCoinPriceSecondJob,
+                new JobParametersBuilder().addLong("timestamp", System.currentTimeMillis()).toJobParameters());
+            slackService.sendMessage("백테스트용 초 데이터 수집이 완료되었습니다.");
         };
     }
 }

@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,11 +26,11 @@ public class TradeLog extends BaseTimeEntity implements Persistable<TradeLogId> 
     public TradeLog(Account account, CoinTradeResponseDTO coinTradeDTO) {
         this.id = account.getId();
         this.symbol = coinTradeDTO.getSymbol();
-        this.buyTime = coinTradeDTO.getTime();
+        this.buyTime = coinTradeDTO.getNanoTime() == 0 ? coinTradeDTO.getTime() : coinTradeDTO.getNanoTime();
         this.totalBuyAmount = coinTradeDTO.getAmount();
         this.totalBuyPrice = coinTradeDTO.getTotalPrice();
         this.buyFee = coinTradeDTO.getFee();
-        this.buyDateTime = BinanceUtil.getTime(this.buyTime);
+        this.buyDateTime = LocalDateTime.ofEpochSecond(coinTradeDTO.getTime() / 1000, 0, ZoneOffset.UTC);
         this.recentSellPrice = 0;
         this.recentSellTime = 0;
         this.totalSellAmount = BigDecimal.ZERO;
@@ -149,8 +150,8 @@ public class TradeLog extends BaseTimeEntity implements Persistable<TradeLogId> 
         return this.buyFee + this.totalSellFee;
     }
 
-    public void complete() {
-        this.isComplete = true;
+    public boolean isComplete() {
+        return this.isComplete;
     }
 
     public void update(OrderResponse order) {
@@ -159,5 +160,9 @@ public class TradeLog extends BaseTimeEntity implements Persistable<TradeLogId> 
 
     public void updateBuyDateTime(LocalDateTime buyDateTime) {
         this.buyDateTime = buyDateTime;
+    }
+
+    public long getAccountId() {
+        return id;
     }
 }

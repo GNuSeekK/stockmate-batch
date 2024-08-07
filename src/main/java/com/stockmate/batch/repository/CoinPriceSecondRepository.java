@@ -11,8 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface CoinPriceSecondRepository extends JpaRepository<CoinPriceSecond, CoinPriceId>,
     CoinPriceSecondBulkRepository {
 
-    @Query("SELECT cp.openTime FROM CoinPriceSecond cp WHERE cp.coin.symbol = :symbol ORDER BY cp.openTime DESC LIMIT 1")
-    Optional<Long> findLatestTimestamp(String symbol);
+    @Query("SELECT cp.openTime FROM CoinPriceSecond cp WHERE cp.coin = :coin ORDER BY cp.openTime DESC LIMIT 1")
+    Optional<Long> findLatestTimestamp(Coin coin);
 
     @Query("SELECT cp FROM CoinPriceSecond cp "
         + "WHERE cp.coin = :coin "

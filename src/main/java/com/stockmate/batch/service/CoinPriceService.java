@@ -25,7 +25,7 @@ public class CoinPriceService {
     }
 
     public long getLatestTimestamp(Coin coin) {
-        return coinPriceRepository.findLatestTimestamp(coin.getSymbol())
+        return coinPriceRepository.findLatestTimestamp(coin)
             .orElse(0L);
     }
 
@@ -36,5 +36,9 @@ public class CoinPriceService {
 
     public List<CoinPrice> getLatestCoinPrices(String symbol, int limit) {
         return coinPriceRepository.findLatestCoinPrices(symbol, limit);
+    }
+
+    public CoinPrice save(CoinPrice coinPrice) {
+        return coinPriceRepository.save(coinPrice);
     }
 }

@@ -1,6 +1,7 @@
 package com.stockmate.batch.entity;
 
 
+import com.stockmate.batch.binance.dto.BinanceWebsocketDTO;
 import com.stockmate.batch.entity.base.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -72,5 +73,15 @@ public class CoinPrice extends BaseTimeEntity implements Persistable<CoinPriceId
             .quoteAssetVolume(coinPrice.getQuoteAssetVolume())
             .numberOfTrades(coinPrice.getNumberOfTrades())
             .build();
+    }
+
+    public void update(BinanceWebsocketDTO binanceWebsocketDTO) {
+        this.closePrice = Double.parseDouble(binanceWebsocketDTO.getPrice());
+        if (this.highPrice < this.closePrice) {
+            this.highPrice = this.closePrice;
+        }
+        if (this.lowPrice > this.closePrice) {
+            this.lowPrice = this.closePrice;
+        }
     }
 }

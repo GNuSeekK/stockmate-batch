@@ -29,4 +29,9 @@ public class CoinPriceSecondService {
         return coinPriceSecondRepository.findPresentCoinPricesWithTimes(coin, startTime, endTime);
     }
 
+
+    public long getLatestTimestamp(Coin coin) {
+        return coinPriceSecondRepository.findLatestTimestamp(coin)
+            .orElse(0L);
+    }
 }

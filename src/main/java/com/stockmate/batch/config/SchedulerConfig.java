@@ -1,5 +1,6 @@
 package com.stockmate.batch.config;
 
+import com.stockmate.batch.binance.websocket.BinanceTickDataManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -18,7 +19,9 @@ public class SchedulerConfig {
 
     private final JobLauncher jobLauncher;
     //    private final Job importStockJob;
-    private final Job importCoinPriceJob;
+//    private final Job importCoinPriceJob;
+    private final Job importCoinPriceRealJob;
+    private final BinanceTickDataManager binanceTickDataManager;
 
 //    @Scheduled(cron = "0 0 8 * * ?")
 //    public void saveStockData() throws Exception {
@@ -29,9 +32,15 @@ public class SchedulerConfig {
 
     @Scheduled(cron = "*/1 * * * * *")
     public synchronized void saveCoinPriceData() throws Exception {
-        jobLauncher.run(importCoinPriceJob, new JobParametersBuilder()
+        jobLauncher.run(importCoinPriceRealJob, new JobParametersBuilder()
             .addLong("timestamp", System.currentTimeMillis())
             .toJobParameters());
+    }
+
+    // 12시간에 한번
+    @Scheduled(cron = "0 0/5 0 * * ?")
+    public synchronized void reconnectBinanceCoinSocket() {
+        binanceTickDataManager.connect();
     }
 
 }

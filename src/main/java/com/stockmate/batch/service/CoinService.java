@@ -22,4 +22,9 @@ public class CoinService {
     public Coin getCoinBySymbol(String symbol) {
         return coinRepository.findBySymbol(symbol).orElseThrow(() -> new IllegalArgumentException("해당 코인이 존재하지 않습니다."));
     }
+
+    public Coin getCoinBySymbolAndKind(String symbol, String kind) {
+        return coinRepository.findBySymbolAndKind(symbol, kind)
+            .orElseThrow(() -> new IllegalArgumentException("해당 코인이 존재하지 않습니다."));
+    }
 }

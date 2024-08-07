@@ -5,7 +5,6 @@ import com.stockmate.batch.repository.TradeLogRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -15,7 +14,7 @@ public class TradeLogService {
 
     private final TradeLogRepository tradeLogRepository;
 
-//    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
+    //    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
     public List<TradeLog> findAllByIdAndComplete(long id, String symbol, boolean isComplete) {
         return tradeLogRepository.findAllByIdAndComplete(id, symbol, isComplete);
     }
@@ -25,4 +24,11 @@ public class TradeLogService {
         return tradeLogRepository.save(tradeLog);
     }
 
+    @Transactional
+    public void saveAllWithBulk(List<TradeLog> completedLogs) {
+        if (completedLogs.isEmpty()) {
+            return;
+        }
+        tradeLogRepository.saveAllWithBulk(completedLogs);
+    }
 }

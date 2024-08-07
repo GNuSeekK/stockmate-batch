@@ -3,7 +3,9 @@ package com.stockmate.batch.service;
 import com.stockmate.batch.entity.Account;
 import com.stockmate.batch.repository.AccountRepository;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +17,19 @@ public class AccountService {
     private final AccountRepository accountRepository;
 
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Account save(Account account) {
         return accountRepository.save(account);
+    }
+
+
+    @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public CompletableFuture<Void> saveIfChanged(Account old, Account account) {
+        if (old.checkChange(account)) {
+            accountRepository.save(account);
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     public Optional<Account> findByNo(String accountNo) {

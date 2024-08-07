@@ -28,4 +28,9 @@ public class BinanceUtil {
         return LocalDateTime.of(year, month, 1, 0, 0).toLocalDate().lengthOfMonth();
     }
 
+    public static void main(String[] args) {
+        long time = getTime(2023, 2, 1, 0, 0);
+        System.out.println(LocalDateTime.ofEpochSecond(time / 1000, 0, ZoneOffset.UTC));
+    }
+
 }

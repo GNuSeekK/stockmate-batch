@@ -11,4 +11,6 @@ public interface BinanceService {
 
     List<BinanceCoinPriceRequestDto> createCoinPriceRequestDtos(List<Coin> symbols, String interval);
 
+    List<BinanceCoinPriceRequestDto> createCoinPriceRequestDtos(Coin symbols, String interval);
+
 }

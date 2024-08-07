@@ -18,6 +18,7 @@ public class OrderResponse {
 
     private String symbol;
     private long updateTime;
+    private long nanoTime;
     private String avgPrice;
     private String cumQuote;
     private String executedQty;
@@ -53,6 +54,7 @@ public class OrderResponse {
         return OrderResponse.builder()
             .symbol(btcTradeRequestDTO.getSymbol())
             .updateTime(System.currentTimeMillis())
+            .nanoTime(System.nanoTime())
             .avgPrice(String.valueOf(coinPriceDTO.getClosePrice()))
             .cumQuote(String.valueOf(coinPriceDTO.getClosePrice() * btcTradeRequestDTO.getQuantity().doubleValue()))
             .executedQty(String.valueOf(btcTradeRequestDTO.getQuantity()))

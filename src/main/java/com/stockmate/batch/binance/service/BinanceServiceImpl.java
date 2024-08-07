@@ -6,23 +6,26 @@ import com.stockmate.batch.binance.dto.BinanceCoinPriceDTO;
 import com.stockmate.batch.binance.dto.BinanceCoinPriceRequestDto;
 import com.stockmate.batch.entity.Coin;
 import com.stockmate.batch.entity.CoinPrice;
+import com.stockmate.batch.service.CoinPriceSecondService;
 import com.stockmate.batch.service.CoinPriceService;
 import com.stockmate.batch.util.BinanceUtil;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class BinanceServiceImpl implements BinanceService {
 
 
     private final CoinPriceService coinPriceService;
+    private final CoinPriceSecondService coinPriceSecondService;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -30,31 +33,20 @@ public class BinanceServiceImpl implements BinanceService {
     private static final int TIME_MULTIPLE = 1000; // 시간 단위 맞추기 위한 값
     private static final int LIMIT = 1000; // 몇개씩
 
-    @Autowired
-    public BinanceServiceImpl(CoinPriceService coinPriceService) {
-        this.coinPriceService = coinPriceService;
-    }
-
-
     @Override
     public List<CoinPrice> getCoinPrice(BinanceCoinPriceRequestDto request) {
         String url = "https://api.binance.com/api/v3/uiKlines?symbol=";
         if (request.getCoin().getKind().equals("F")) {
             url = "https://fapi.binance.com/fapi/v1/klines?symbol=";
         }
-        url += request.getSymbol()
-            + "&interval=" + request.getInterval()
-            + "&startTime=" + request.getStartTime()
-            + "&endTime=" + request.getEndTime()
-            + "&limit=" + LIMIT;
+        url += request.getSymbol() + "&interval=" + request.getInterval() + "&startTime=" + request.getStartTime()
+            + "&endTime=" + request.getEndTime() + "&limit=" + LIMIT;
         String response = restTemplate.getForObject(url, String.class);
         try {
             List<BinanceCoinPriceDTO> coinPriceDTOs = objectMapper.readValue(response,
                 new TypeReference<List<BinanceCoinPriceDTO>>() {
                 });
-            return coinPriceDTOs.stream()
-                .map(dto -> dto.toEntity(request))
-                .toList();
+            return coinPriceDTOs.stream().map(dto -> dto.toEntity(request)).toList();
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to get new coin prices from Binance API");
@@ -65,16 +57,21 @@ public class BinanceServiceImpl implements BinanceService {
     public List<BinanceCoinPriceRequestDto> createCoinPriceRequestDtos(List<Coin> coins, String interval) {
         List<BinanceCoinPriceRequestDto> requests = new ArrayList<>(List.of());
         for (Coin coin : coins) {
-            long startTime = coinPriceService.getLatestTimestamp(coin);
+
+            long multiple = MULTIPLE;
+            long startTime;
+            if (interval.equals("1s")) {
+                multiple = 1;
+                startTime = coinPriceSecondService.getLatestTimestamp(coin);
+            } else {
+                startTime = coinPriceService.getLatestTimestamp(coin);
+            }
+
             if (startTime == 0) {
-                startTime = getStartTimeFromBinanceApi(coin.getSymbol());
+                startTime = getStartTimeFromBinanceApi(coin);
             }
             long endTime = LocalDateTime.now(ZoneOffset.UTC).toEpochSecond(ZoneOffset.UTC) * TIME_MULTIPLE;
             // startTime 부터 endTime까지 1000초씩 나눠서 넣기
-            long multiple = MULTIPLE;
-            if (interval.equals("1s")) {
-                multiple = 1;
-            }
             long unit = TIME_MULTIPLE * LIMIT * multiple;
             for (long i = startTime; i < endTime; i += unit) {
                 requests.add(new BinanceCoinPriceRequestDto(coin.getSymbol(), i, i + unit, interval, coin));
@@ -83,12 +80,36 @@ public class BinanceServiceImpl implements BinanceService {
         return requests;
     }
 
-    private long getStartTimeFromBinanceApi(String symbol) {
+    @Override
+    public List<BinanceCoinPriceRequestDto> createCoinPriceRequestDtos(Coin coin, String interval) {
+        List<BinanceCoinPriceRequestDto> requests = new ArrayList<>(List.of());
+        long startTime = coinPriceService.getLatestTimestamp(coin);
+        if (startTime == 0) {
+            startTime = getStartTimeFromBinanceApi(coin);
+        }
+        long endTime = LocalDateTime.now(ZoneOffset.UTC).toEpochSecond(ZoneOffset.UTC) * TIME_MULTIPLE;
+        // startTime 부터 endTime까지 1000초씩 나눠서 넣기
+        long multiple = MULTIPLE;
+        if (interval.equals("1s")) {
+            multiple = 1;
+        }
+        long unit = TIME_MULTIPLE * LIMIT * multiple;
+        for (long i = startTime; i < endTime; i += unit) {
+            requests.add(new BinanceCoinPriceRequestDto(coin.getSymbol(), i, i + unit, interval, coin));
+        }
+        return requests;
+    }
+
+    private long getStartTimeFromBinanceApi(Coin coin) {
         long startTime = 0L;
         long endTime = BinanceUtil.getNowTimeUTC();
         List<CoinPrice> coinPrices = new ArrayList<>(List.of());
-        String url = "https://api.binance.com/api/v3/uiKlines?symbol=" + symbol
-            + "&interval=" + "1m" + "&startTime=" + startTime + "&endTime=" + endTime + "&limit=1";
+        String url = "https://api.binance.com/api/v3/uiKlines?symbol=";
+        if (coin.getKind().equals("F")) {
+            url = "https://fapi.binance.com/fapi/v1/klines?symbol=";
+        }
+        url += coin.getSymbol() + "&interval=" + "1m" + "&startTime=" + startTime
+            + "&endTime=" + endTime + "&limit=1";
         String response = restTemplate.getForObject(url, String.class);
         try {
             List<BinanceCoinPriceDTO> coinPriceDTOs = objectMapper.readValue(response,
