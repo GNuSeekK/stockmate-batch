@@ -72,9 +72,7 @@ public class TestExecutor {
             List<TradeLog> completedLogs = new ArrayList<>();
             account = accountService.save(account);
 
-            CoinPriceDTO lastDTO = doTradeRequest(coinPriceSeconds, completedLogs, remainedLogs, account);
-
-            sellRemainedLogs(remainedLogs, account, lastDTO, completedLogs);
+            doTradeRequest(coinPriceSeconds, completedLogs, remainedLogs, account);
             saveEntities(account, completedLogs);
         });
     }
@@ -93,7 +91,7 @@ public class TestExecutor {
         }
     }
 
-    private CoinPriceDTO doTradeRequest(List<CoinPriceSecond> coinPriceSeconds, List<TradeLog> completedLogs,
+    private void doTradeRequest(List<CoinPriceSecond> coinPriceSeconds, List<TradeLog> completedLogs,
         List<TradeLog> remainedLogs, Account account) {
         CoinPriceDTO request = CoinPriceDTO.of(coinPriceSeconds.get(0));
         for (CoinPriceSecond coinPrice : coinPriceSeconds) {
@@ -103,7 +101,7 @@ public class TestExecutor {
             request = request.updatedDTO(coinPrice);
             completedLogs.addAll(tradingExecutor.trade(remainedLogs, account, request, true));
         }
-        return request;
+        sellRemainedLogs(remainedLogs, account, request, completedLogs);
     }
 
     private Account makeNewAccount(String accountNo, Integer year, Integer month, String accountMemo, double asset) {
