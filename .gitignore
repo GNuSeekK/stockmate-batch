@@ -256,4 +256,22 @@ build/
 !**/src/test/**/build/
 
 ### quant 쪽은 생략
-/src/main/java/com/stockmate/batch/quant
+
+
+!src/main/java/com/stockmate/batch/quant/common
+
+src/main/java/com/stockmate/batch/quant/dto/*
+!src/main/java/com/stockmate/batch/quant/dto/CoinPriceDTO.java
+!src/main/java/com/stockmate/batch/quant/dto/CoinTradeResponseDTO.java
+
+
+src/main/java/com/stockmate/batch/quant/helper/*
+!src/main/java/com/stockmate/batch/quant/helper/TestHelper.java
+!src/main/java/com/stockmate/batch/quant/helper/TestHelperImpl.java
+
+src/main/java/com/stockmate/batch/quant/repository
+src/main/java/com/stockmate/batch/quant/condition
+
+src/main/java/com/stockmate/batch/quant/strategy/*
+!src/main/java/com/stockmate/batch/quant/strategy/Strategy.java
+!src/main/java/com/stockmate/batch/quant/strategy/StrategyImpl.java
