@@ -62,9 +62,6 @@ public class TradingExecutor {
 
     public synchronized void trade(BinanceWebsocketDTO binanceWebsocketDTO) {
         CoinPriceDTO after = lastCoinPrice.makeNewUpdatedDTO(binanceWebsocketDTO);
-        if (CoinPriceDTO.isChangedValue(lastCoinPrice, after)) {
-            return;
-        }
         trade(after, true);
     }
 
